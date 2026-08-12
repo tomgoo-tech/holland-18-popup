@@ -33,7 +33,7 @@
 
     .hero {
       display: block;
-      width: min(100%, 1024px);
+      width: min(100%, 460px);
       margin: 0 auto;
       background: #000;
       cursor: pointer;
@@ -100,6 +100,11 @@
     footer p { font-size: inherit; }
 
     @media (max-width: 600px) {
+      #hero-root {
+        min-height: 100svh;
+        padding-bottom: 64px;
+      }
+
       article { width: min(calc(100% - 28px), 860px); padding-top: 46px; }
       body { line-height: 1.65; }
     }
@@ -107,9 +112,11 @@
 </head>
 <body>
   <main>
-    <a class="hero" id="hero-link" href="https://google.com" aria-label="Continue to Google">
-      <img src="assets/age-gate.png" width="1024" height="1536" alt="18 plus. Ready to play responsibly? You must be 18 or older.">
-    </a>
+    <div id="hero-root">
+      <a class="hero" href="https://google.com" aria-label="Continue to Google">
+        <img src="assets/age-gate.jpg?v=3" width="512" height="768" alt="18 plus. Ready to play responsibly? You must be 18 or older.">
+      </a>
+    </div>
 
     <article>
       <h1>Casino Hotel Reviews Across 10 Countries</h1>
@@ -147,18 +154,55 @@
     </article>
   </main>
 
+  <script src="assets/react.production.min.js"></script>
+  <script src="assets/react-dom.production.min.js"></script>
   <script>
-    // Переключатель кликабельности изображения:
-    // true — ссылка включена, false — полностью отключена.
+    // Переключатель React-механики:
+    // true — изображение кликабельно, false — полностью отключено.
     const IMAGE_CLICK_ENABLED = true;
+    const IMAGE_TARGET_URL = 'https://google.com';
 
-    const heroLink = document.getElementById('hero-link');
-    if (!IMAGE_CLICK_ENABLED) {
-      heroLink.removeAttribute('href');
-      heroLink.removeAttribute('aria-label');
-      heroLink.setAttribute('aria-disabled', 'true');
-      heroLink.setAttribute('tabindex', '-1');
+    function HeroImage() {
+      const [isClickable] = React.useState(IMAGE_CLICK_ENABLED);
+
+      function handleClick(event) {
+        if (!isClickable) {
+          event.preventDefault();
+          return;
+        }
+        window.location.assign(IMAGE_TARGET_URL);
+      }
+
+      function handleKeyDown(event) {
+        if (isClickable && (event.key === 'Enter' || event.key === ' ')) {
+          event.preventDefault();
+          window.location.assign(IMAGE_TARGET_URL);
+        }
+      }
+
+      return React.createElement(
+        'div',
+        {
+          className: 'hero',
+          role: isClickable ? 'link' : undefined,
+          tabIndex: isClickable ? 0 : -1,
+          'aria-label': isClickable ? 'Continue to Google' : undefined,
+          'aria-disabled': isClickable ? undefined : 'true',
+          onClick: handleClick,
+          onKeyDown: handleKeyDown
+        },
+        React.createElement('img', {
+          src: 'assets/age-gate.jpg?v=3',
+          width: 512,
+          height: 768,
+          alt: '18 plus. Ready to play responsibly? You must be 18 or older.'
+        })
+      );
     }
+
+    ReactDOM.createRoot(document.getElementById('hero-root')).render(
+      React.createElement(HeroImage)
+    );
   </script>
 </body>
 </html>
