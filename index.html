@@ -101,8 +101,10 @@
 
     @media (max-width: 600px) {
       #hero-root {
-        min-height: 100svh;
-        padding-bottom: 64px;
+        display: flex;
+        min-height: calc(100svh + 160px);
+        align-items: center;
+        justify-content: center;
       }
 
       article { width: min(calc(100% - 28px), 860px); padding-top: 46px; }
